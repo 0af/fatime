@@ -1,0 +1,335 @@
+// Variables
+@import "variables";
+@import "function";
+
+@import 'bootstrap.min.css';
+
+@import "~font-awesome/scss/font-awesome.scss";
+
+@font-face {
+  font-family: 'iranSans';
+  src: url('../fonts/IRANSansWeb_Light.woff2') format('woff2'),
+  url('../fonts/IRANSansWeb_Light.woff') format('woff'),
+  url('../fonts/IRANSansWeb_Light.ttf')  format('truetype');
+}
+.navbar-laravel {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+body{
+  font-family: iranSans;
+}
+.calendar-arabic-date {
+  font-size: .7em;
+}
+.calendar-gregorian-date {
+  font-size: .7em;
+}
+.calendar-cell{
+  color: #606a78;
+  .selected-calendar{
+    color: black;
+    font-weight:bold;
+  }
+}
+.last-day-of-week{
+  color: red;
+  background-color: rgba(241, 241, 241, 0.69);
+  .selected-calendar{
+    color: red;
+  }
+}
+.bg-cst-light{
+  background-color: whitesmoke;
+}
+.bg-default {
+  background-color: $default-color !important;
+}
+.box-default {
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.12),0 1px 4px rgba(0,0,0,.24);
+}
+.text-default {
+  color: $default-color;
+}
+.border-default {
+  border-color: $default-color !important;
+}
+.border-3 {
+  border-width:3px !important;
+}
+.other-month-day {
+  opacity: .3;
+
+}
+
+.vertical-middle{
+  display: table;
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  &__child{ display: table-cell; vertical-align: middle; text-align: center;
+  }
+}
+
+/* Math functions */
+$pi: 3.14159265359;
+$_precision: 10;
+/* Clock */
+$clockSize: 200px;
+
+$clockPadding: $clockSize/60;
+$clockBorderWidth: $clockSize * 0.035;
+$digitsSize: round($clockSize / 10);
+
+$numOfMinuteMarks: 60;
+$radius: 360 / $numOfMinuteMarks;
+
+$handsCircleSize: round($clockSize/20);
+
+$handHourLength: round($clockSize * 0.3);
+$handHourWidth: even($handsCircleSize * 0.5);
+
+$handMinuteLength: round($clockSize * 0.4);
+$handMinuteWidth: even($handsCircleSize * 0.35);
+
+$handSecondLength: $handMinuteLength * 1.1;
+$handSecondWidth: ceil($clockSize/300);
+
+$S: (
+        x: ($clockSize - $clockPadding)/2,
+        y: ($clockSize - $clockPadding)/2
+);
+$A: (
+        x: ($clockSize - $clockPadding)/2,
+        y: 0
+);
+$u: (
+        x: -1 * map-get($S, x),
+        y: -1 * map-get($S, y)
+);
+.prayer-time-icon {
+  width: 40px;
+  height: 40px;
+  background-image: url('/images/prayer-time/payer.png');
+  background-size: 250px 40px;
+  display: inline-block;
+}
+.clock{
+  font-family: "Droid Serif", serif;
+  display: inline-block;
+  width: $clockSize;
+  height: $clockSize;
+  background-color: white;
+  border: 1px solid #ababab;
+  box-shadow: 0 1px 6px rgba(0,0,0,.12),0 1px 4px rgba(0,0,0,.24);
+  border-radius: 100%;
+  position: absolute;
+  top: 85%;
+  right: 0%;
+  margin-top: -$clockSize/2 - $clockBorderWidth;
+  margin-left: -$clockSize/2 - $clockBorderWidth;
+  &__marks{
+    list-style: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    li{
+      display: block; position: absolute;
+      &:before{
+        content: "";
+        display: block;
+        width: 1px;
+        height: 6px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #000
+      } &:after{
+          font-size: $digitsSize;
+          line-height: 1;
+          position: absolute;
+          top: $digitsSize*0.4;
+          width: 50px;
+          left: -25px;
+          text-align: center;
+          -webkit-font-smoothing: antialiased;
+        } @for $i from 1 through $numOfMinuteMarks{
+      $B: (
+              x: -(map-get($A, y) + map-get($u, y)) * sin(radian($i * $radius))  -  map-get($u, x) + $clockPadding/2,
+              y: (map-get($A, y) + map-get($u, y)) * cos(radian($i * $radius))  -  map-get($u, y) + $clockPadding/2
+      );
+      &:nth-child(#{$i}){
+        left: map-get($B, x);
+        top: map-get($B, y);
+        transform: rotate(#{$i * $radius}deg);
+        @if $i%5 == 0{
+          &:before{
+            width: 3px;
+            height: 7px;
+            left: -1px;
+          }
+          &:after{
+            content: "#{$i/5}";
+            transform: rotate(#{-1 * $i * $radius}deg);
+          }
+        }
+      }
+    }
+    }
+  }
+  &__hands{
+    width: $handsCircleSize;
+    height: $handsCircleSize;
+    border-radius: 100%;
+    background: #6C5116;
+    box-sizing: border-box;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -$handsCircleSize/2;
+    margin-top: -$handsCircleSize/2;
+    transform: rotate(180deg);
+  } &__hand{
+      transform-origin: top center;
+      background: #000;
+      position: absolute;
+      top: $handsCircleSize/2;
+      transition: transform 0.2s;
+      &:before{
+        content: "";
+        display: block;
+        width: 0; height: 0;
+        position: absolute;
+      } &:after{
+          content: "";
+          display: block;
+          position: absolute;
+          background: #000;
+        } &--hour{
+            width: $handHourWidth;
+            height: $handHourLength;
+            left: $handsCircleSize/2 - $handHourWidth/2;
+            &:before{
+              bottom: -2 * floor($handHourWidth*0.8);
+              border: solid transparent;
+              border-width: floor($handHourWidth*0.8) $handHourWidth/2;
+              border-top-color: #000;
+            }
+            &:after{
+              width: $handHourWidth;
+              height: $handHourLength/5;
+              top: -$handHourLength/5;
+            }
+          } &--minute{
+              width: $handMinuteWidth;
+              height: $handMinuteLength;
+              left: $handsCircleSize/2 - $handMinuteWidth/2;
+              &:before{
+                bottom: -2 * floor($handMinuteWidth*0.8);
+                border: solid transparent;
+                border-width: floor($handMinuteWidth*0.8) $handMinuteWidth/2;
+                border-top-color: #000;
+              }
+              &:after{
+                width: $handMinuteWidth;
+                height: $handMinuteLength/5;
+                top: -$handMinuteLength/5;
+              }
+            } &--second{
+                width: $handSecondWidth;
+                height: $handSecondLength;
+                left: $handsCircleSize/2 - $handSecondWidth/2;
+                &:before{
+                  top: -$handSecondLength*0.33;
+                  border: 0;
+                  width: $handSecondWidth + 2;
+                  height: $handSecondLength*0.25;
+                  background: #000; left: -1px;
+                } &:after{
+                    width: $handSecondWidth;
+                    height: $handSecondLength/5;
+                    top: -$handSecondLength/5; }
+              }
+    }
+}
+.cursor-pointer {
+  &:hover{
+    cursor: pointer;
+  }
+}
+.gradient-bar {
+  background-image: repeating-linear-gradient(270deg,#9079e1 0,#2cd6aa 10%,#28aff8 20%,#9079e1 30%);
+  height: 5px;
+}
+.event-item {
+  span{
+    font-size: .9em;
+  }
+}
+.outline-0 {
+  &:focus{
+    outline: none;
+  }
+}
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.modal-container {
+  width: 40%;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  text-align: right;
+}
+
+.modal-header span {
+  margin-top: 0;
+}
+.modal-body {
+  margin: 20px 0;
+}
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+@media (max-width: 768px) {
+  .modal-container {
+    width: 90%;
+    max-height: 400px;
+    overflow-y: scroll;
+  }
+}
+#event-details{
+  display: none;
+  z-index: 999;
+  cursor: default;
+}
+.event-item-title{
+  &:hover{
+    #event-details{
+      display: block;
+    }
+  }
+}
